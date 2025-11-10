@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "titulo": "Optimus Prime",
+      "descripcion": "Modelo con articulaciones y materiales variados.",
+      "imagenPath": "assets/images/big-optimus-prime-multi-material-model1_medium.png",
+      "etiqueta": "Juguete"
+    },
+    {
+      "id": "2",
+      "titulo": "Hollow Knight",
+      "descripcion": "Personajes principales del juego Hollow Knight.",
+      "imagenPath": "assets/images/hollow_knight.png",
+      "etiqueta": "Decorativo"
+    },
+    {
+      "id": "3",
+      "titulo": "Star Wars",
+      "descripcion": "Logo Star Wars para decoración impresa en 3D.",
+      "imagenPath": "assets/images/star_wars.png",
+      "etiqueta": "Decorativo"
+    },
+    {
+      "id": "4",
+      "titulo": "Soporte USB",
+      "descripcion": "Soporte vertical para discos y tarjetas de memoria.",
+      "imagenPath": "assets/images/usb_holder.png",
+      "etiqueta": "Útil"
+    }
+  ]
+}
