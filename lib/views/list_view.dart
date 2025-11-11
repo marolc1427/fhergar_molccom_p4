@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/item.dart';
+import 'detail_view.dart';
 
 class ListViewPage extends StatefulWidget {
-  const ListViewPage({Key? key}) : super(key: key);
+  const ListViewPage({super.key});
 
   @override
   State<ListViewPage> createState() => _ListViewPageState();
@@ -24,7 +25,7 @@ class _ListViewPageState extends State<ListViewPage>
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..repeat(); // gira continuamente
+    )..repeat();
   }
 
   @override
@@ -33,24 +34,22 @@ class _ListViewPageState extends State<ListViewPage>
     super.dispose();
   }
 
-  // Cargar datos desde JSON local
   Future<List<Item>> _loadItems() async {
-    await Future.delayed(const Duration(seconds: 2)); // simula carga lenta
-    final jsonString =
-        await DefaultAssetBundle.of(context).loadString('assets/data/items.json');
+    await Future.delayed(const Duration(seconds: 2));
+    final jsonString = await DefaultAssetBundle.of(
+      context,
+    ).loadString('assets/data/items.json');
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
     final List<dynamic> jsonList = jsonMap['items'];
     return jsonList.map((e) => Item.fromMap(e)).toList();
   }
 
-  // Refrescar con pull-to-refresh
   Future<void> _refreshData() async {
     setState(() {
       _futureItems = _loadItems();
     });
   }
 
-  // Abrir enlaces de patrocinadores
   Future<void> _abrirEnlace(String url) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
@@ -79,7 +78,6 @@ class _ListViewPageState extends State<ListViewPage>
         future: _futureItems,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            //Logo girando mientras se carga
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -95,10 +93,7 @@ class _ListViewPageState extends State<ListViewPage>
                   const SizedBox(height: 20),
                   const Text(
                     "Cargando modelos...",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 ],
               ),
@@ -138,16 +133,30 @@ class _ListViewPageState extends State<ListViewPage>
                           children: [
                             Stack(
                               children: [
-                                Container(
-                                  height: 250,
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      topRight: Radius.circular(12),
-                                    ),
-                                    image: DecorationImage(
-                                      image: AssetImage(item.imagenPath),
-                                      fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DetailView(item: item),
+                                      ),
+                                    );
+                                  },
+                                  child: Hero(
+                                    tag: item.imagenPath,
+                                    child: Container(
+                                      height: 250,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          topRight: Radius.circular(12),
+                                        ),
+                                        image: DecorationImage(
+                                          image: AssetImage(item.imagenPath),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -230,7 +239,6 @@ class _ListViewPageState extends State<ListViewPage>
                     ],
                   );
                 } else {
-                  // Patrocinadores
                   return Column(
                     children: [
                       const SizedBox(height: 30),
