@@ -23,18 +23,89 @@ class _CustomModelFormState extends State<CustomModelForm> {
     final formState = _formKey.currentState;
     if (formState?.validate() ?? false) {
       formState!.save();
-      // Simular envío
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Solicitud enviada' +
-                (_carefulPackaging ? ' (empaquetado cuidado)' : ''),
-          ),
-        ),
-      );
-      dev.log(
-        'Solicitud -> name: $_name, email: $_email, date: $_preferredDate, finish: $_finish, carefulPackaging: $_carefulPackaging, model: $_modelName, details: $_details',
-      );
+
+      final detailsPreview = (_details == null || _details!.trim().isEmpty)
+          ? '-'
+          : (_details!.length > 160
+                ? '${_details!.substring(0, 160)}...'
+                : _details!);
+
+      showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Confirmar solicitud'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Nombre: ${_name ?? '-'}'),
+                  const SizedBox(height: 6),
+                  Text('Correo: ${_email ?? '-'}'),
+                  const SizedBox(height: 6),
+                  Text('Fecha entrega: ${_preferredDate ?? '-'}'),
+                  const SizedBox(height: 6),
+                  Text('Acabado: ${_finish ?? '-'}'),
+                  const SizedBox(height: 6),
+                  Text('Producto: ${_modelName ?? '-'}'),
+                  const SizedBox(height: 8),
+                  const Text('Detalles:'),
+                  const SizedBox(height: 4),
+                  Text(detailsPreview),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4F46E5),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text(
+                  'Confirmar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      ).then((confirmed) {
+        if (confirmed ?? false) {
+          final message = 'Solicitud enviada';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: const Color(0xFF4F46E5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          dev.log(
+            'Solicitud -> name: $_name, email: $_email, date: $_preferredDate, finish: $_finish, carefulPackaging: $_carefulPackaging, model: $_modelName, details: $_details',
+          );
+        }
+      });
     }
   }
 
@@ -42,8 +113,12 @@ class _CustomModelFormState extends State<CustomModelForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulario: Modelo 3D'),
+        title: const Text(
+          'Pedido personalizado',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFF4F46E5),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 2,
       ),
       body: SingleChildScrollView(
@@ -121,6 +196,7 @@ class _CustomModelFormState extends State<CustomModelForm> {
                 ),
               ),
               const SizedBox(height: 16),
+              //Widget de dropdown para acabado de impresión
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
                   labelText: 'Acabado de impresión',
@@ -197,6 +273,7 @@ class _CustomModelFormState extends State<CustomModelForm> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4F46E5),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -205,7 +282,11 @@ class _CustomModelFormState extends State<CustomModelForm> {
                 onPressed: _submit,
                 child: const Text(
                   'Enviar solicitud',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
