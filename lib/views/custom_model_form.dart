@@ -14,6 +14,8 @@ class _CustomModelFormState extends State<CustomModelForm> {
   String? _name;
   String? _email;
   String? _preferredDate;
+  String? _finish;
+  bool _carefulPackaging = false;
   String? _modelName;
   String? _details;
 
@@ -22,11 +24,16 @@ class _CustomModelFormState extends State<CustomModelForm> {
     if (formState?.validate() ?? false) {
       formState!.save();
       // Simular envío
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Solicitud enviada')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Solicitud enviada' +
+                (_carefulPackaging ? ' (empaquetado cuidado)' : ''),
+          ),
+        ),
+      );
       dev.log(
-        'Solicitud -> name: $_name, email: $_email, date: $_preferredDate, model: $_modelName, details: $_details',
+        'Solicitud -> name: $_name, email: $_email, date: $_preferredDate, finish: $_finish, carefulPackaging: $_carefulPackaging, model: $_modelName, details: $_details',
       );
     }
   }
@@ -48,12 +55,12 @@ class _CustomModelFormState extends State<CustomModelForm> {
             children: [
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Tu nombre',
+                  labelText: 'Nombre y apellidos',
                   border: OutlineInputBorder(),
                 ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty)
-                    return 'Introduce tu nombre y apellidos';
+                    return 'Introduce nombre y apellidos';
                   final parts = v.trim().split(RegExp(r"\s+"));
                   if (parts.length < 2) return 'Introduce al menos un apellido';
                   // Asegurar que el apellido tiene más de una letra
@@ -80,14 +87,75 @@ class _CustomModelFormState extends State<CustomModelForm> {
                 onSaved: (v) => _email = v?.trim(),
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              // Fecha con DatePicker
+              GestureDetector(
+                onTap: () async {
+                  final now = DateTime.now();
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: now,
+                    firstDate: now,
+                    lastDate: DateTime(now.year + 2),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _preferredDate =
+                          '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+                    });
+                  }
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Fecha de entrega deseada (opcional)',
+                      hintText: 'YYYY-MM-DD',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: const Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _preferredDate ?? '',
+                    ),
+                    onSaved: (v) => _preferredDate = v?.trim(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
-                  labelText: 'Fecha de entrega deseada',
-                  hintText: 'YYYY-MM-DD',
+                  labelText: 'Acabado de impresión',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.datetime,
-                onSaved: (v) => _preferredDate = v?.trim(),
+                items: const [
+                  DropdownMenuItem(value: 'Mate', child: Text('Mate')),
+                  DropdownMenuItem(
+                    value: 'Brillante',
+                    child: Text('Brillante'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Apto para pintura',
+                    child: Text('Apto para pintura'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Suave al tacto',
+                    child: Text('Suave al tacto'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Texturizado',
+                    child: Text('Texturizado'),
+                  ),
+                  DropdownMenuItem(value: 'Pulido', child: Text('Pulido')),
+                  DropdownMenuItem(
+                    value: 'Resistente UV',
+                    child: Text('Resistente UV'),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _finish = v),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Selecciona un acabado';
+                  return null;
+                },
+                onSaved: (v) => _finish = v,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -111,6 +179,18 @@ class _CustomModelFormState extends State<CustomModelForm> {
                 ),
                 onSaved: (v) => _details = v?.trim(),
                 onChanged: (v) => dev.log('Detalle: $v'),
+              ),
+              const SizedBox(height: 8),
+              // Checkbox para empaquetado cuidado
+              CheckboxListTile(
+                title: const Text('Empaquetado cuidado'),
+                subtitle: const Text(
+                  'Marcar si necesita empaquetado extra para proteger la pieza',
+                ),
+                value: _carefulPackaging,
+                onChanged: (v) =>
+                    setState(() => _carefulPackaging = v ?? false),
+                controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 16),
               const SizedBox(height: 24),
