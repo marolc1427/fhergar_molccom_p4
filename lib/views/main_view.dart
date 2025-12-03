@@ -6,8 +6,11 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isWide = screenWidth > 600;
+
     return Scaffold(
-      // Estructura principal de la pantalla
       appBar: AppBar(
         toolbarHeight: 100,
         title: const Text(
@@ -21,127 +24,130 @@ class MainView extends StatelessWidget {
         backgroundColor: const Color(0xFF4F46E5),
         elevation: 2,
       ),
-
-      // Cuerpo principal de la pantalla
-      body: Column(
-        children: [
-          // Mensaje de bienvenida en la parte superior
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            color: const Color(0xFFEDE9FE),
-            child: const Text(
-              "~ Bring your ideas to life",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.right,
-            ),
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: screenHeight,
           ),
-
-          const SizedBox(height: 30), // Espacio entre el mensaje y el login
-          // Cuadro de login centrado con sombra
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  // Sombra sutil para dar profundidad
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-
-              // Contenido del formulario de login
-              child: Column(
-                children: [
-                  // Título del formulario
-                  const Text(
-                    "Iniciar sesión",
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Mensaje de bienvenida
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  color: const Color(0xFFEDE9FE),
+                  child: const Text(
+                    "~ Bring your ideas to life",
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4F46E5),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      fontStyle: FontStyle.italic,
                     ),
+                    textAlign: TextAlign.right,
                   ),
-                  const SizedBox(height: 20),
+                ),
 
-                  // Campo de texto para el usuario
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: "Usuario",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
+                const SizedBox(height: 30),
 
-                  // Campo de texto para la contraseña (oculta caracteres)
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: "Contraseña",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Botón de entrar
-                  GestureDetector(
-                    onTap: () {
-                      // Navega a la siguiente pantalla al pulsar
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ListViewPage()),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 30,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: const [
-                          // Sombra para dar sensación de botón elevado
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 6,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      // Texto del botón
-                      child: const Text(
-                        "Entrar",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                // Login box
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: isWide ? screenWidth * 0.2 : 30),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
                         ),
-                      ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Iniciar sesión",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4F46E5),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Usuario
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Usuario",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Contraseña
+                        TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: "Contraseña",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Botón de entrar
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ListViewPage()),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 30),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6366F1),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: const Text(
+                              "Entrar",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                // Spacer adaptable
+                SizedBox(height: 20),
+              ],
             ),
           ),
-
-          // Spacer empuja el contenido hacia arriba
-          const Spacer(),
-        ],
+        ),
       ),
     );
   }
