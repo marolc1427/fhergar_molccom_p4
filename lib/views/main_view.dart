@@ -25,7 +25,7 @@ class MainView extends StatelessWidget {
         elevation: 2,
         actions: [
           IconButton(
-            icon: const Icon(Icons.language),
+            icon: const Icon(Icons.language, color: Colors.white),
             tooltip: t.appTitle,
             onPressed: () => _showLanguageDialog(context),
           ),
@@ -97,7 +97,8 @@ class MainView extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ListViewPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const ListViewPage()),
                       );
                     },
                     child: Container(
@@ -142,37 +143,53 @@ class MainView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(t.appTitle),
+        backgroundColor: const Color(0xFF4F46E5), // fondo oscuro
+        title: Text(
+          t.appTitle,
+          style: const TextStyle(color: Colors.white),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('English'),
+              leading: const Icon(Icons.flag, color: Colors.white),
+              title: const Text(
+                'English',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 onLocaleChange(const Locale('en'));
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('Español'),
+              leading: const Icon(Icons.flag, color: Colors.white),
+              title: const Text(
+                'Español',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 onLocaleChange(const Locale('es'));
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('Français'),
+              leading: const Icon(Icons.flag, color: Colors.white),
+              title: const Text(
+                'Français',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 onLocaleChange(const Locale('fr'));
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('Deutsch'),
+              leading: const Icon(Icons.flag, color: Colors.white),
+              title: const Text(
+                'Deutsch',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 onLocaleChange(const Locale('de'));
                 Navigator.pop(ctx);
